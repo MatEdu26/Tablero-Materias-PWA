@@ -1,0 +1,31 @@
+{
+  "name": "Tablero de Materias UNO",
+  "short_name": "TableroUNO",
+  "description": "Organizador de materias para estudiantes de la Universidad Nacional del Oeste.",
+  "start_url": "./login.html",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#3b82f6",
+  "orientation": "portrait",
+  "scope": "./",
+  "icons": [
+    {
+      "src": "img/Logo.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any"
+    },
+    {
+      "src": "img/Logo.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "maskable"
+    },
+    {
+      "src": "img/logo_azul.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
