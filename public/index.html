@@ -26,6 +26,7 @@
                 <span id="msgBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display: none; font-size: 0.65rem;">0</span>
             </a>
             <button id="navUsuarios" class="nav-btn nav-btn-warning" style="display: none;" onclick="openUsersModal()"><i class="bi bi-people"></i>Usuarios</button>
+            <button id="btnNuevaMateria" class="nav-btn nav-btn-success" style="display: none; background-color: #22c55e; color: white; border-color: transparent;" onclick="openAddMateriaModal()"><i class="bi bi-plus-lg"></i>Nueva Materia</button>
             <button id="loadPlanBtn" class="nav-btn nav-btn-primary"><i class="bi bi-journal-plus"></i>Cargar Plan</button>
             <a href="contacto.html" class="nav-btn nav-btn-icon" title="Contacto"><i class="bi bi-envelope"></i></a>
             <span id="userGreeting" class="text-white-50 ms-2" style="font-size: 0.85rem;"></span>
@@ -153,12 +154,71 @@
                 <h3>Elige tu Carrera</h3>
                 <span class="close-btn" onclick="closeCareerModal()">&times;</span>
             </div>
-            <p style="margin-bottom: 1.5rem; color: #94a3b8; font-size: 0.9rem;">Selecciona una carrera para precargar automáticamente todas sus materias en el tablero.</p>
-            <div style="display: flex; flex-direction: column; gap: 1rem;">
-                <button class="career-btn" onclick="loadStudyPlan('tec_web', this)">Tecnicatura Universitaria en Tecnologías Web</button>
-                <button class="career-btn" onclick="loadStudyPlan('tec_redes', this)">Tecnicatura Universitaria en Redes Informáticas</button>
-                <button class="career-btn" onclick="loadStudyPlan('lic_inf', this)">Licenciatura en Informática</button>
+            <p style="margin-bottom: 1.5rem; color: #94a3b8; font-size: 0.9rem;">Selecciona una carrera para cargar sus materias correspondientes en el tablero.</p>
+            <div id="careersListContainer" style="display: flex; flex-direction: column; gap: 1rem;">
+                <!-- Cargado dinámicamente desde Firestore -->
             </div>
+            <!-- Botón para admin para crear nueva carrera -->
+            <div id="adminCareerControls" style="display: none; margin-top: 1.5rem; border-top: 1px solid var(--border-color); padding-top: 1rem; text-align: center;">
+                <button class="btn-primary" style="width: auto; margin: 0 auto;" onclick="openAddCareerModal()"><i class="bi bi-plus-lg me-1"></i>Agregar Carrera</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Agregar/Editar Carrera (Admin) -->
+    <div id="careerManageModal" class="modal">
+        <div class="modal-content" style="max-width: 450px;">
+            <div class="modal-header">
+                <h3 id="careerManageModalTitle">Agregar Carrera</h3>
+                <span class="close-btn" onclick="closeCareerManageModal()">&times;</span>
+            </div>
+            <form id="careerManageForm">
+                <input type="hidden" id="careerManageId">
+                <div class="form-group">
+                    <label for="careerManageName">Nombre de la Carrera</label>
+                    <input type="text" id="careerManageName" placeholder="Ej. Ingeniería en Informática" required maxlength="100">
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1.5rem;">
+                    <button type="submit" class="btn-primary" style="width: auto;">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal para Agregar Materia (Admin) -->
+    <div id="addMateriaModal" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3>Agregar Nueva Materia</h3>
+                <span class="close-btn" onclick="closeAddMateriaModal()">&times;</span>
+            </div>
+            <p style="margin-bottom: 1.5rem; color: #94a3b8; font-size: 0.9rem;">Crea una nueva materia de forma global.</p>
+            <form id="addMateriaForm">
+                <div class="form-group">
+                    <label for="addMateriaTitle">Nombre de la Materia</label>
+                    <input type="text" id="addMateriaTitle" placeholder="Ej. Introducción a la Programación" maxlength="100" required>
+                </div>
+                <div class="form-group">
+                    <label for="addMateriaYear">Año</label>
+                    <select id="addMateriaYear" style="width: 100%; padding: 0.75rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); background-color: var(--bg-color); color: var(--text-primary);">
+                        <option value="1° AÑO">1° AÑO</option>
+                        <option value="2° AÑO">2° AÑO</option>
+                        <option value="3° AÑO">3° AÑO</option>
+                        <option value="4° AÑO">4° AÑO</option>
+                        <option value="5° AÑO">5° AÑO</option>
+                        <option value="OTRAS">OTRAS</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="addMateriaCareer">Carrera</label>
+                    <select id="addMateriaCareer" style="width: 100%; padding: 0.75rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); background-color: var(--bg-color); color: var(--text-primary);">
+                        <!-- Opciones cargadas dinámicamente -->
+                    </select>
+                </div>
+                <div style="display: flex; justify-content: flex-end; margin-top: 1.5rem;">
+                    <button type="submit" class="btn-primary" style="width: auto;">Agregar Materia</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -172,6 +232,21 @@
             <p style="margin-bottom: 1.5rem; color: #94a3b8; font-size: 0.9rem;">Puedes añadir información complementaria aquí.</p>
             <form id="detailsForm">
                 <input type="hidden" id="detailsId">
+                <div class="form-group" id="adminTitleGroup" style="display: none;">
+                    <label for="detailsTitle">Nombre de la Materia (Admin)</label>
+                    <input type="text" id="detailsTitle" placeholder="Ej. Programación 1" maxlength="100">
+                </div>
+                <div class="form-group" id="adminYearGroup" style="display: none;">
+                    <label for="detailsYear">Año (Admin)</label>
+                    <select id="detailsYear" style="width: 100%; padding: 0.75rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); background-color: var(--bg-color); color: var(--text-primary);">
+                        <option value="1° AÑO">1° AÑO</option>
+                        <option value="2° AÑO">2° AÑO</option>
+                        <option value="3° AÑO">3° AÑO</option>
+                        <option value="4° AÑO">4° AÑO</option>
+                        <option value="5° AÑO">5° AÑO</option>
+                        <option value="OTRAS">OTRAS</option>
+                    </select>
+                </div>
                 <div class="form-group">
                     <label for="detailsTeacher">Docente</label>
                     <input type="text" id="detailsTeacher" placeholder="Ej. Juan Pérez" maxlength="100">
@@ -188,8 +263,9 @@
                     <label for="detailsDesc">Descripción / Apuntes</label>
                     <textarea id="detailsDesc" rows="3" placeholder="Aulas, horarios, links a parciales..." maxlength="500" style="width: 100%; padding: 0.75rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); background-color: var(--bg-color); color: var(--text-primary); font-family: var(--font-family); resize: vertical;"></textarea>
                 </div>
-                <div style="display: flex; justify-content: flex-end; margin-top: 1rem;">
-                    <button type="submit" class="btn-primary" style="width: auto;">Guardar Cambios</button>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; width: 100%; gap: 1rem;">
+                    <button type="button" id="adminDeleteBtn" class="btn-secondary" style="color: #ef4444; border-color: rgba(239, 68, 68, 0.4); background: rgba(239, 68, 68, 0.1); display: none;">Eliminar Materia</button>
+                    <button type="submit" class="btn-primary" style="width: auto; margin-left: auto;">Guardar Cambios</button>
                 </div>
             </form>
         </div>
@@ -221,6 +297,11 @@
             </div>
         </div>
     </div>
+
+    <!-- Botón flotante para admins (Mobile/Desktop FAB) -->
+    <button id="fabAddMateria" class="fab-btn" title="Agregar Materia" onclick="openAddMateriaModal()">
+        <i class="bi bi-plus-lg"></i>
+    </button>
 
     <!-- Toast de notificaciones (centrado en pantalla) -->
     <div id="toastContainer" style="display:none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 9999; pointer-events: none;">

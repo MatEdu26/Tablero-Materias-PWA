@@ -1,14 +1,14 @@
 import { auth, db } from './conexion-firebase.js';
 import { signOut } from "https://www.gstatic.com/firebasejs/11.7.0/firebase-auth.js";
-import { 
-    collection, 
-    query, 
-    where, 
-    onSnapshot, 
-    doc, 
-    updateDoc, 
-    deleteDoc, 
-    getDocs, 
+import {
+    collection,
+    query,
+    where,
+    onSnapshot,
+    doc,
+    updateDoc,
+    deleteDoc,
+    getDocs,
     writeBatch
 } from "https://www.gstatic.com/firebasejs/11.7.0/firebase-firestore.js";
 
@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const navAdminMobile = document.getElementById('navMensajesMobile');
         const navUsers = document.getElementById('navUsuarios');
         const navUsersMobile = document.getElementById('navUsuariosMobile');
-        
+
         if (navAdmin) navAdmin.style.display = 'inline-flex';
         if (navAdminMobile) navAdminMobile.style.display = 'flex';
         if (navUsers) navUsers.style.display = 'inline-flex';
@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const loadPlanBtnMobile = document.getElementById('loadPlanBtnMobile');
     if (loadPlanBtnMobile) loadPlanBtnMobile.onclick = () => openCareerModal();
-    
+
     const detailsForm = document.getElementById('detailsForm');
     if (detailsForm) {
         detailsForm.addEventListener('submit', saveCardDetails);
@@ -80,7 +80,7 @@ function escucharMaterias() {
     if (!userId) return;
 
     const consulta = query(collection(db, 'tasks'), where('user_id', '==', userId));
-    
+
     if (canceladorMaterias) {
         canceladorMaterias();
     }
@@ -137,8 +137,8 @@ function showToast(message, type = 'success') {
 
     const colors = {
         success: { bg: '#22c55e', icon: '✅' },
-        error:   { bg: '#ef4444', icon: '❌' },
-        info:    { bg: '#3b82f6', icon: 'ℹ️' },
+        error: { bg: '#ef4444', icon: '❌' },
+        info: { bg: '#3b82f6', icon: 'ℹ️' },
         special: { bg: 'linear-gradient(135deg, #a855f7, #ec4899)', icon: '🎓' }
     };
     const c = colors[type] || colors.info;
@@ -192,7 +192,7 @@ function renderBoards() {
     };
 
     for (const key in columns) {
-        if(columns[key]) {
+        if (columns[key]) {
             columns[key].innerHTML = '';
             updateColumnCount(columns[key].closest('.board-column'), 0);
         }
@@ -206,7 +206,7 @@ function renderBoards() {
     });
 
     for (const key in columns) {
-        if(columns[key]) {
+        if (columns[key]) {
             updateColumnCount(columns[key].closest('.board-column'), columns[key].children.length);
         }
     }
@@ -215,7 +215,7 @@ function renderBoards() {
     updateProgressBar();
 }
 
-// Crear tarjeta de materia (SIN swipe to delete ni botones de eliminar, ya que no se pueden borrar)
+// Crear tarjeta de materia
 function createTaskCard(task) {
     const card = document.createElement('div');
     card.className = 'task-card';
@@ -345,7 +345,7 @@ function initSortable() {
                 const taskIndex = tasks.findIndex(t => t.id == taskId);
                 if (taskIndex > -1 && tasks[taskIndex].estado !== newStatus) {
                     tasks[taskIndex].estado = newStatus;
-                    
+
                     // Actualizar UI localmente de forma optimista
                     updateBoardCounters();
                     updateProgressBar();
@@ -379,12 +379,12 @@ function updateBoardCounters() {
 const usersModal = document.getElementById('usersModal');
 
 async function openUsersModal() {
-    if(usersModal) usersModal.classList.add('show');
+    if (usersModal) usersModal.classList.add('show');
     await loadUsersList();
 }
 
 function closeUsersModal() {
-    if(usersModal) usersModal.classList.remove('show');
+    if (usersModal) usersModal.classList.remove('show');
 }
 
 async function loadUsersList() {
@@ -433,7 +433,7 @@ async function changeUserRole(targetUserId, newRole) {
         showToast('No puedes cambiar tu propio rol.', 'error');
         return;
     }
-    if(!await showConfirm(`¿Estás seguro de cambiar el rol a ${newRole}?`)) {
+    if (!await showConfirm(`¿Estás seguro de cambiar el rol a ${newRole}?`)) {
         await loadUsersList();
         return;
     }
@@ -453,8 +453,8 @@ async function deleteUser(targetUserId) {
         showToast('No puedes eliminar tu propia cuenta.', 'error');
         return;
     }
-    if(!await showConfirm('¿Eliminar cuenta permanentemente? Se borrarán sus materias asociadas.')) return;
-    
+    if (!await showConfirm('¿Eliminar cuenta permanentemente? Se borrarán sus materias asociadas.')) return;
+
     try {
         // 1. Eliminar materias asociadas
         const qTasks = query(collection(db, 'tasks'), where('user_id', '==', targetUserId));
@@ -470,7 +470,7 @@ async function deleteUser(targetUserId) {
 
         await loadUsersList();
         showToast('Usuario y materias eliminados correctamente.', 'success');
-    } catch(err) {
+    } catch (err) {
         console.error(err);
         showToast('No se pudo eliminar el usuario.', 'error');
     }
@@ -488,7 +488,7 @@ window.deleteUser = deleteUser;
 const careerModal = document.getElementById('careerModal');
 const detailsModal = document.getElementById('detailsModal');
 
-window.onclick = function(event) {
+window.onclick = function (event) {
     if (event.target === careerModal) closeCareerModal();
     if (event.target === detailsModal) closeDetailsModal();
     if (event.target === usersModal) closeUsersModal();
@@ -562,7 +562,7 @@ async function saveCardDetails(e) {
 
         // Actualizar localmente de manera optimista
         const taskIndex = tasks.findIndex(t => t.id === taskId);
-        if(taskIndex > -1){
+        if (taskIndex > -1) {
             tasks[taskIndex].docente = docente;
             tasks[taskIndex].cuatrimestre = cuatrimestre;
             tasks[taskIndex].nota = nota;
@@ -572,7 +572,7 @@ async function saveCardDetails(e) {
         renderBoards();
         closeDetailsModal();
         showToast('Detalles guardados correctamente.', 'success');
-    } catch(err) {
+    } catch (err) {
         console.error('Error guardando detalles en Firestore:', err);
         showToast('Error al guardar los detalles.', 'error');
     } finally {
@@ -585,10 +585,10 @@ async function saveCardDetails(e) {
 // CARGA INICIAL DE PLAN DE ESTUDIOS
 // =======================
 function openCareerModal() {
-    if(careerModal) careerModal.classList.add('show');
+    if (careerModal) careerModal.classList.add('show');
 }
 function closeCareerModal() {
-    if(careerModal) careerModal.classList.remove('show');
+    if (careerModal) careerModal.classList.remove('show');
 }
 
 window.openCareerModal = openCareerModal;
@@ -619,14 +619,14 @@ const studyPlans = {
 };
 
 async function loadStudyPlan(careerId, buttonEl) {
-    if(!await showConfirm('¿Seguro que quieres precargar este plan de estudios?')) return;
+    if (!await showConfirm('¿Seguro que quieres precargar este plan de estudios?')) return;
 
     const tasksToInsert = studyPlans[careerId];
-    if(!tasksToInsert) return;
+    if (!tasksToInsert) return;
 
     const buttons = document.querySelectorAll('.career-btn');
     let originalHtml = '';
-    
+
     if (buttonEl) {
         originalHtml = buttonEl.innerHTML;
         buttonEl.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Cargando plan...';
@@ -657,7 +657,7 @@ async function loadStudyPlan(careerId, buttonEl) {
 
         closeCareerModal();
         showToast('Plan de estudios precargado con éxito.', 'success');
-    } catch(err) {
+    } catch (err) {
         console.error('Error precargando plan en Firestore:', err);
         showToast('Error al guardar el plan de estudios en la base de datos.', 'error');
     } finally {

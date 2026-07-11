@@ -5,7 +5,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/11.7.0/firebas
 import { getAuth } from "https://www.gstatic.com/firebasejs/11.7.0/firebase-auth.js";
 import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager } from "https://www.gstatic.com/firebasejs/11.7.0/firebase-firestore.js";
 
-// Credenciales obtenidas del proyecto de Firebase "tablero-materias"
+// Credenciales
 const firebaseConfig = {
     apiKey: "AIzaSyDVdCX5_Qp_anQ3wLjS5NArk0xo9btj388",
     authDomain: "tablero-materias.firebaseapp.com",
@@ -36,7 +36,7 @@ if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('./service-worker.js')
             .then(reg => {
                 console.log('Service Worker registrado con éxito:', reg);
-                
+
                 reg.addEventListener('updatefound', () => {
                     const newWorker = reg.installing;
                     newWorker.addEventListener('statechange', () => {

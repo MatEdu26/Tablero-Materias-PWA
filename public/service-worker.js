@@ -1,4 +1,4 @@
-const CACHE_NAME = "tablero-pwa-v8";
+const CACHE_NAME = "tablero-pwa-v9";
 
 const urlsToCache = [
   "./",
