@@ -25,6 +25,44 @@ const db = initializeFirestore(app, {
     localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() })
 });
 
+let networkBanner = null;
+
+function showConnectionBanner(message, type = 'info') {
+    if (!document.body) return;
+
+    if (!networkBanner) {
+        networkBanner = document.createElement('div');
+        networkBanner.id = 'networkStatusBanner';
+        document.body.appendChild(networkBanner);
+    }
+
+    const palette = {
+        success: { bg: 'rgba(34, 197, 94, 0.95)', icon: '✅' },
+        warning: { bg: 'rgba(245, 158, 11, 0.95)', icon: '⚠️' },
+        info: { bg: 'rgba(59, 130, 246, 0.95)', icon: 'ℹ️' }
+    };
+    const style = palette[type] || palette.info;
+
+    networkBanner.style.cssText = `position:fixed; top:12px; left:50%; transform:translateX(-50%); z-index:1200; padding:0.75rem 1rem; background:${style.bg}; color:white; border-radius:999px; box-shadow:0 10px 25px rgba(0,0,0,0.35); display:flex; align-items:center; gap:0.6rem; font-size:0.9rem; font-weight:600; max-width:min(90vw, 520px); text-align:center;`;
+    networkBanner.innerHTML = `<span>${style.icon}</span><span>${message}</span>`;
+
+    clearTimeout(showConnectionBanner.timeout);
+    if (type !== 'warning') {
+        showConnectionBanner.timeout = setTimeout(() => {
+            if (networkBanner) {
+                networkBanner.style.display = 'none';
+            }
+        }, 3200);
+    }
+}
+
+window.addEventListener('online', () => showConnectionBanner('Conexión reestablecida. Los cambios se sincronizarán automáticamente.', 'success'));
+window.addEventListener('offline', () => showConnectionBanner('Sin conexión. Algunas acciones se guardarán localmente y se sincronizarán cuando vuelva la red.', 'warning'));
+
+if (!navigator.onLine) {
+    showConnectionBanner('Sin conexión. Algunas acciones se guardarán localmente.', 'warning');
+}
+
 // Exportar instancias para usar en el resto de los módulos
 export { app, auth, db };
 

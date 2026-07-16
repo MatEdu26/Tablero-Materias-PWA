@@ -36,6 +36,46 @@ let canceladorUsuario = null;
 let canceladorSubjects = null;
 let canceladorTasks = null;
 
+function normalizeText(value = '') {
+    return String(value)
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, ' ')
+        .trim();
+}
+
+function getYearRank(anio = '') {
+    const order = {
+        '1° AÑO': 1,
+        '2° AÑO': 2,
+        '3° AÑO': 3,
+        '4° AÑO': 4,
+        '5° AÑO': 5,
+        'OTRAS': 6
+    };
+    return order[anio] ?? 999;
+}
+
+function ordenarMateriasPorAnio(items = []) {
+    return [...items].sort((a, b) => {
+        const rankA = getYearRank(a.anio);
+        const rankB = getYearRank(b.anio);
+        if (rankA !== rankB) return rankA - rankB;
+        return (a.titulo || '').localeCompare(b.titulo || '', 'es', { sensitivity: 'base' });
+    });
+}
+
+function encontrarMateriaPorTitulo(subjects = [], titulo = '') {
+    const normalizedTitle = normalizeText(titulo);
+    if (!normalizedTitle) return null;
+
+    return subjects.find(subject => {
+        const normalizedSubjectTitle = normalizeText(subject.titulo);
+        return normalizedSubjectTitle === normalizedTitle || normalizedSubjectTitle.includes(normalizedTitle) || normalizedTitle.includes(normalizedSubjectTitle);
+    }) || null;
+}
+
 // Planes de estudio (definidos aquí para que estén disponibles en el seeding)
 const studyPlans = {
     tec_web: [
@@ -226,24 +266,23 @@ async function verificarYMigrarDatos() {
 
                     if (legacyData.subject_id) return;
 
-                    const match = globalSubjects.find(s => s.titulo && legacyData.titulo && s.titulo.toLowerCase() === legacyData.titulo.toLowerCase());
+                    const match = encontrarMateriaPorTitulo(globalSubjects, legacyData.titulo);
+                    const newDocId = match ? `${userId}_${match.id}` : `${userId}_legacy_${docSnap.id}`;
+                    const newDocRef = doc(db, 'tasks', newDocId);
 
-                    if (match) {
-                        const newDocId = `${userId}_${match.id}`;
-                        const newDocRef = doc(db, 'tasks', newDocId);
+                    migrationBatch.set(newDocRef, {
+                        user_id: userId,
+                        subject_id: match ? match.id : '',
+                        estado: legacyData.estado || 'Materias',
+                        docente: legacyData.docente || '',
+                        cuatrimestre: legacyData.cuatrimestre || '',
+                        nota: legacyData.nota || '',
+                        descripcion: legacyData.descripcion || '',
+                        titulo: legacyData.titulo || '',
+                        anio: legacyData.anio || (match ? match.anio : '')
+                    });
 
-                        migrationBatch.set(newDocRef, {
-                            user_id: userId,
-                            subject_id: match.id,
-                            estado: legacyData.estado || 'Materias',
-                            docente: legacyData.docente || '',
-                            cuatrimestre: legacyData.cuatrimestre || '',
-                            nota: legacyData.nota || '',
-                            descripcion: legacyData.descripcion || ''
-                        });
-
-                        migrationBatch.delete(docSnap.ref);
-                    }
+                    migrationBatch.delete(docSnap.ref);
                 });
 
                 migrationBatch.update(userDocRef, { career_id: detectedCareerId });
@@ -344,9 +383,11 @@ function escucharCarreraYMaterias(careerId) {
 }
 
 function combinarYRenderizar() {
-    tasks = currentSubjects.map(subject => {
+    const cards = [];
+
+    currentSubjects.forEach(subject => {
         const progress = currentTasks.find(t => t.subject_id === subject.id) || {};
-        return {
+        cards.push({
             id: subject.id,
             titulo: subject.titulo,
             anio: subject.anio,
@@ -355,9 +396,25 @@ function combinarYRenderizar() {
             cuatrimestre: progress.cuatrimestre || '',
             nota: progress.nota || '',
             descripcion: progress.descripcion || ''
-        };
+        });
     });
 
+    currentTasks
+        .filter(task => !task.subject_id && (task.titulo || task.subject_title))
+        .forEach(task => {
+            cards.push({
+                id: task.id,
+                titulo: task.titulo || task.subject_title || 'Materia sin nombre',
+                anio: task.anio || '',
+                estado: task.estado || 'Materias',
+                docente: task.docente || '',
+                cuatrimestre: task.cuatrimestre || '',
+                nota: task.nota || '',
+                descripcion: task.descripcion || ''
+            });
+        });
+
+    tasks = ordenarMateriasPorAnio(cards);
     renderBoards();
 }
 

@@ -18,7 +18,17 @@ Un organizador de materias en formato Kanban diseñado para estudiantes de la Un
 
 ---
 
-## 🛠️ Tecnologías y Herramientas Utilizadas
+## � Funcionalidades disponibles sin conexión
+
+La aplicación está preparada para ofrecer una experiencia útil incluso cuando no hay internet:
+
+- Guardado y sincronización local de cambios del tablero y de los mensajes de contacto.
+- Mensajes de contacto que se almacenan en cola cuando el usuario está offline y se envían automáticamente al volver la conexión.
+- Avisos visuales claros cuando la app entra o sale del modo offline.
+- Acceso a la interfaz principal y a la información ya cargada en el dispositivo mientras no haya red.
+- Persistencia local de la sesión y de los datos del usuario para que la app siga siendo usable en dispositivos móviles y escritorio.
+
+## �🛠️ Tecnologías y Herramientas Utilizadas
 
 ### Frontend & Diseño
 *   **HTML5 Semántico**: Estructura de maquetación limpia y accesible.

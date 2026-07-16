@@ -27,6 +27,9 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.href = 'login.html';
     });
 
+    window.addEventListener('offline', () => showToast('Sin conexión. La respuesta quedará pendiente hasta volver a tener red.', 'warning'));
+    window.addEventListener('online', () => showToast('Conexión reestablecida.', 'success'));
+
     // Formulario de respuesta
     const replyForm = document.getElementById('replyForm');
     if (replyForm) {
@@ -37,6 +40,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const submitBtn = document.getElementById('replySubmitBtn');
             
             if (!msgId || !replyText) return;
+
+            if (!navigator.onLine) {
+                showToast('Sin conexión. No se pudo enviar la respuesta en este momento.', 'warning');
+                return;
+            }
             
             submitBtn.disabled = true;
             submitBtn.innerHTML = 'Enviando...';
@@ -69,15 +77,22 @@ function escucharMensajes() {
     const container = document.getElementById('messagesList');
     if (!container) return;
 
-    // Consulta ordenada por fecha de creación ascendente (como en el backend original)
-    const consulta = query(collection(db, 'messages'), orderBy('created_at', 'asc'));
+    const consulta = query(collection(db, 'messages'));
 
     if (canceladorEscucha) {
         canceladorEscucha();
     }
 
     canceladorEscucha = onSnapshot(consulta, (querySnapshot) => {
-        if (querySnapshot.empty) {
+        const mensajes = querySnapshot.docs
+            .map(docSnapshot => ({ id: docSnapshot.id, ...docSnapshot.data() }))
+            .sort((a, b) => {
+                const dateA = a.created_at ? new Date(a.created_at).getTime() : 0;
+                const dateB = b.created_at ? new Date(b.created_at).getTime() : 0;
+                return dateA - dateB;
+            });
+
+        if (mensajes.length === 0) {
             container.innerHTML = `
                 <div class="col-12 text-center py-5">
                     <i class="bi bi-inbox text-secondary" style="font-size: 3rem;"></i>
@@ -87,9 +102,9 @@ function escucharMensajes() {
         }
 
         container.innerHTML = '';
-        querySnapshot.forEach(docSnapshot => {
-            const msg = docSnapshot.data();
-            const id = docSnapshot.id;
+        mensajes.forEach(msgData => {
+            const msg = msgData;
+            const id = msgData.id;
             const card = document.createElement('div');
             card.className = 'col-12 col-md-6 col-lg-4';
             
@@ -100,7 +115,6 @@ function escucharMensajes() {
             };
             const type = colorMap[msg.subject] || { color: '#64748b', icon: 'bi-chat-left' };
 
-            // Formatear la fecha
             let fecha = 'Fecha no disponible';
             if (msg.created_at) {
                 fecha = new Date(msg.created_at).toLocaleString();
@@ -208,7 +222,7 @@ function showToast(message, type = 'success') {
     const container = document.getElementById('toastContainer');
     const box = document.getElementById('toastBox');
     if (!container || !box) return;
-    const c = type === 'success' ? { bg: '#22c55e', icon: '✅' } : { bg: '#ef4444', icon: '❌' };
+    const c = type === 'success' ? { bg: '#22c55e', icon: '✅' } : type === 'warning' ? { bg: '#f59e0b', icon: '⚠️' } : { bg: '#ef4444', icon: '❌' };
     box.style.background = c.bg;
     box.innerHTML = `<span class="me-2">${c.icon}</span><span>${message}</span>`;
     container.style.display = 'flex';
