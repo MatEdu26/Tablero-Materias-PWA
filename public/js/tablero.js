@@ -66,6 +66,18 @@ function ordenarMateriasPorAnio(items = []) {
     });
 }
 
+function ordenarTareasPorEstadoYAnio(items = []) {
+    return ordenarMateriasPorAnio(items).sort((a, b) => {
+        const estadoA = a.estado || 'Materias';
+        const estadoB = b.estado || 'Materias';
+        const order = { Materias: 0, 'En curso': 1, Regularizadas: 2, Aprobadas: 3 };
+        const rankEstadoA = order[estadoA] ?? 99;
+        const rankEstadoB = order[estadoB] ?? 99;
+        if (rankEstadoA !== rankEstadoB) return rankEstadoA - rankEstadoB;
+        return getYearRank(a.anio) - getYearRank(b.anio);
+    });
+}
+
 function encontrarMateriaPorTitulo(subjects = [], titulo = '') {
     const normalizedTitle = normalizeText(titulo);
     if (!normalizedTitle) return null;
@@ -510,7 +522,8 @@ function renderBoards() {
         }
     }
 
-    tasks.forEach(task => {
+    const orderedTasks = ordenarTareasPorEstadoYAnio(tasks);
+    orderedTasks.forEach(task => {
         const col = columns[task.estado];
         if (col) {
             col.appendChild(createTaskCard(task));
