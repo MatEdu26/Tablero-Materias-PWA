@@ -16,23 +16,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const errorMsg = document.getElementById('errorMsg');
     const submitBtn = document.getElementById('submitBtn');
 
-    // Alternar visibilidad de contraseña
-    document.querySelectorAll('.password-toggle').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const inputId = btn.getAttribute('data-target');
-            const input = document.getElementById(inputId);
-            if (!input) return;
-            
-            const isPassword = input.type === 'password';
-            input.type = isPassword ? 'text' : 'password';
-            
-            const icon = btn.querySelector('i');
-            if (icon) {
-                icon.className = isPassword ? 'bi bi-eye-slash' : 'bi bi-eye';
-            }
-        });
-    });
-
     // Redirigir a index si ya tiene sesión activa
     if (localStorage.getItem('token')) {
         auth.onAuthStateChanged(user => {
@@ -98,40 +81,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const emailInput = document.getElementById('email');
         const usuarioInput = document.getElementById('username');
         const contrasenaInput = document.getElementById('password');
-        const confirmContrasenaInput = document.getElementById('confirm-password');
         
         const email = emailInput ? emailInput.value.trim() : '';
         const usuario = usuarioInput ? usuarioInput.value.trim() : '';
         const contrasena = contrasenaInput ? contrasenaInput.value : '';
-        const confirmContrasena = confirmContrasenaInput ? confirmContrasenaInput.value : '';
         
-        if (!email) {
-            showError('Por favor ingresa tu correo electrónico.');
-            return;
-        }
-
-        if (type === 'registro' && !usuario) {
-            showError('Por favor ingresa un nombre de usuario.');
-            return;
-        }
-
-        if (!contrasena) {
-            showError('Por favor ingresa tu contraseña.');
-            return;
-        }
-
-        if (type === 'registro' && !confirmContrasena) {
-            showError('Por favor confirma tu contraseña.');
+        if (!contrasena || !email || (type === 'registro' && !usuario)) {
+            showError('Por favor completa todos los campos.');
             return;
         }
 
         if (type === 'registro' && contrasena.length < 6) {
             showError('La contraseña debe tener al menos 6 caracteres.');
-            return;
-        }
-
-        if (type === 'registro' && contrasena !== confirmContrasena) {
-            showError('Las contraseñas no coinciden.');
             return;
         }
 
@@ -151,10 +112,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     userCredential = await signInWithEmailAndPassword(auth, email, contrasena);
                 } catch (error) {
                     // Auto-creación de cuenta Admin si falla y son las credenciales por defecto
-                    if (email === 'admin@tablero.com' && contrasena === 'bAss1!' && 
+                    if (email === 'admin@tablero.com' && contrasena === 'bAss1' && 
                         (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential' || error.code === 'auth/invalid-email')) {
                         try {
-                            userCredential = await createUserWithEmailAndPassword(auth, 'admin@tablero.com', 'bAss1!');
+                            userCredential = await createUserWithEmailAndPassword(auth, 'admin@tablero.com', 'bAss1');
                             const uid = userCredential.user.uid;
                             // Registrar admin en Firestore
                             await setDoc(doc(db, 'users', uid), {
@@ -246,24 +207,6 @@ document.addEventListener('DOMContentLoaded', () => {
         inputs.forEach(input => {
             input.addEventListener('input', () => {
                 input.setCustomValidity('');
-                if (input.id === 'password' && type === 'registro') {
-                    const confirmInput = document.getElementById('confirm-password');
-                    if (confirmInput && confirmInput.value) {
-                        if (confirmInput.value !== input.value) {
-                            confirmInput.setCustomValidity('Las contraseñas no coinciden.');
-                            confirmInput.style.borderColor = '#ef4444';
-                        } else {
-                            confirmInput.setCustomValidity('');
-                            confirmInput.style.borderColor = '#22c55e';
-                        }
-                    }
-                }
-                if (input.id === 'confirm-password') {
-                    const passwordVal = document.getElementById('password')?.value;
-                    if (input.value !== passwordVal) {
-                        input.setCustomValidity('Las contraseñas no coinciden.');
-                    }
-                }
                 if (!input.validity.valid) {
                     input.style.borderColor = '#ef4444';
                 } else {

@@ -21,16 +21,16 @@
             </h2>
         </div>
         <div class="header-right">
-            <a id="navMensajes" href="mensajes_admin.html" class="nav-btn nav-btn-warning" style="display: none; position: relative;">
+            <a id="navMensajes" href="mensajes_admin.html" class="nav-btn nav-btn-primary" style="display: none; position: relative;">
                 <i class="bi bi-chat-dots"></i>Mensajes
                 <span id="msgBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display: none; font-size: 0.65rem;">0</span>
             </a>
-            <button id="navUsuarios" class="nav-btn nav-btn-warning" style="display: none;" onclick="openUsersModal()"><i class="bi bi-people"></i>Usuarios</button>
-            <button id="btnNuevaMateria" class="nav-btn nav-btn-warning" style="display: none;" onclick="openAddMateriaModal()"><i class="bi bi-plus-lg"></i>Nueva Materia</button>
-            <button id="loadPlanBtn" class="nav-btn nav-btn-warning"><i class="bi bi-journal-plus"></i>Cargar Plan</button>
-            <a href="contacto.html" class="nav-btn nav-btn-warning nav-btn-icon" title="Contacto"><i class="bi bi-envelope"></i></a>
+            <button id="navUsuarios" class="nav-btn nav-btn-primary" style="display: none;" onclick="openUsersModal()"><i class="bi bi-people"></i>Usuarios</button>
+            <button id="btnNuevaMateria" class="nav-btn nav-btn-primary" style="display: none;" onclick="openAddMateriaModal()"><i class="bi bi-plus-lg"></i>Nueva Materia</button>
+            <button id="loadPlanBtn" class="nav-btn nav-btn-primary"><i class="bi bi-journal-plus"></i>Cargar Plan</button>
+            <a href="contacto.html" class="nav-btn nav-btn-primary" title="Contacto"><i class="bi bi-envelope"></i>Contacto</a>
             <span id="userGreeting" class="text-white-50 ms-2" style="font-size: 0.85rem;"></span>
-            <button id="logoutBtn" class="nav-btn nav-btn-warning" title="Cerrar Sesión"><i class="bi bi-box-arrow-right"></i>Cerrar Sesión</button>
+            <button id="logoutBtn" class="nav-btn nav-btn-primary" title="Cerrar Sesión"><i class="bi bi-box-arrow-right"></i>Cerrar Sesión</button>
         </div>
     </header>
 
@@ -298,10 +298,6 @@
         </div>
     </div>
 
-    <!-- Botón flotante para admins (Mobile/Desktop FAB) -->
-    <button id="fabAddMateria" class="fab-btn" title="Agregar Materia" onclick="openAddMateriaModal()">
-        <i class="bi bi-plus-lg"></i>
-    </button>
 
     <!-- Toast de notificaciones (centrado en pantalla) -->
     <div id="toastContainer" style="display:none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 9999; pointer-events: none;">

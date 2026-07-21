@@ -27,8 +27,8 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.href = 'login.html';
     });
 
-    window.addEventListener('offline', () => showToast('Sin conexión. La respuesta quedará pendiente hasta volver a tener red.', 'warning'));
-    window.addEventListener('online', () => showToast('Conexión reestablecida.', 'success'));
+    window.addEventListener('offline', () => showToast('Sin conexión a internet. Las respuestas se guardarán localmente y se enviarán automáticamente al restablecer la red.', 'warning'));
+    window.addEventListener('online', () => showToast('Conexión reestablecida. Respuestas sincronizadas con éxito.', 'success'));
 
     // Formulario de respuesta
     const replyForm = document.getElementById('replyForm');

@@ -622,15 +622,6 @@ body {
     }
 
     #progressText {
-        min-width: auto !important;
-    }
-
-    .fab-btn {
-        bottom: calc(92px + env(safe-area-inset-bottom));
-        right: 16px;
-        width: 58px;
-        height: 58px;
-        font-size: 1.35rem;
     }
 }
 
@@ -716,41 +707,4 @@ body {
     line-height: 1.5;
 }
 
-/* BOTÓN FLOTANTE (FAB) PARA AGREGAR MATERIA */
-.fab-btn {
-    position: fixed;
-    bottom: 95px;
-    right: 20px;
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-    color: white;
-    border: none;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
-    display: none; /* Se activa dinámicamente desde JS */
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    cursor: pointer;
-    z-index: 999;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.fab-btn:hover {
-    transform: scale(1.1) translateY(-3px);
-    box-shadow: 0 15px 30px rgba(59, 130, 246, 0.4);
-    background: linear-gradient(135deg, #2563eb, #7c3aed);
-}
-
-.fab-btn:active {
-    transform: scale(0.95) translateY(-1px);
-}
-
-@media (min-width: 769px) {
-    .fab-btn {
-        bottom: 30px;
-        right: 30px;
-    }
-}
 

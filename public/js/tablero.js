@@ -124,7 +124,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         const navUsers = document.getElementById('navUsuarios');
         const navUsersMobile = document.getElementById('navUsuariosMobile');
         const btnNuevaMateria = document.getElementById('btnNuevaMateria');
-        const fabAddMateria = document.getElementById('fabAddMateria');
         const loadPlanBtn = document.getElementById('loadPlanBtn');
         const loadPlanBtnMobile = document.getElementById('loadPlanBtnMobile');
 
@@ -133,7 +132,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (navUsers) navUsers.style.display = 'inline-flex';
         if (navUsersMobile) navUsersMobile.style.display = 'flex';
         if (btnNuevaMateria) btnNuevaMateria.style.display = 'inline-flex';
-        if (fabAddMateria) fabAddMateria.style.display = 'flex';
         // Renombrar botón de Cargar Plan a "Carreras" para admin (una sola vez)
         if (loadPlanBtn) loadPlanBtn.innerHTML = '<i class="bi bi-journal-check"></i> Carreras';
         if (loadPlanBtnMobile) {
@@ -448,8 +446,8 @@ function escucharCantidadMensajes() {
 }
 
 // ====== FEEDBACK ONLINE/OFFLINE =======
-window.addEventListener('online', () => showToast('Conexión reestablecida. Base de datos sincronizada.', 'success'));
-window.addEventListener('offline', () => showToast('Modo offline activado. Los cambios se guardarán localmente.', 'info'));
+window.addEventListener('online', () => showToast('Conexión reestablecida. Las actividades se sincronizaron con éxito.', 'success'));
+window.addEventListener('offline', () => showToast('Sin conexión a internet. Las actividades se guardarán localmente y se ejecutarán al restablecer la red.', 'info'));
 
 // =======================
 // NOTIFICACIONES (Toast y Confirm)

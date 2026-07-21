@@ -56,11 +56,11 @@ function showConnectionBanner(message, type = 'info') {
     }
 }
 
-window.addEventListener('online', () => showConnectionBanner('Conexión reestablecida. Los cambios se sincronizarán automáticamente.', 'success'));
-window.addEventListener('offline', () => showConnectionBanner('Sin conexión. Algunas acciones se guardarán localmente y se sincronizarán cuando vuelva la red.', 'warning'));
+window.addEventListener('online', () => showConnectionBanner('Conexión reestablecida. Las actividades pendientes se sincronizaron con éxito.', 'success'));
+window.addEventListener('offline', () => showConnectionBanner('Sin conexión a internet. Las actividades se guardarán localmente y se llevarán a cabo en cuanto vuelva la red.', 'warning'));
 
 if (!navigator.onLine) {
-    showConnectionBanner('Sin conexión. Algunas acciones se guardarán localmente.', 'warning');
+    showConnectionBanner('Sin conexión a internet. Las actividades se guardarán localmente y se llevarán a cabo en cuanto vuelva la red.', 'warning');
 }
 
 // Exportar instancias para usar en el resto de los módulos

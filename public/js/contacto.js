@@ -75,14 +75,14 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.href = 'login.html';
     });
 
-    window.addEventListener('offline', () => showToast('Sin conexión. Tu mensaje se guardará y se enviará cuando vuelva la red.', 'warning'));
+    window.addEventListener('offline', () => showToast('Sin conexión. Tu mensaje se guardará localmente y se enviará automáticamente en cuanto vuelva la red.', 'warning'));
     window.addEventListener('online', () => {
-        showToast('Conexión reestablecida.', 'success');
+        showToast('Conexión reestablecida. Sincronizando mensajes...', 'success');
         syncPendingMessages(userId, username);
     });
 
     if (!navigator.onLine) {
-        showToast('Sin conexión. Tu mensaje se guardará y se enviará cuando vuelva la red.', 'warning');
+        showToast('Sin conexión. Tu mensaje se guardará localmente y se enviará automáticamente en cuanto vuelva la red.', 'warning');
     } else {
         syncPendingMessages(userId, username);
     }
@@ -119,11 +119,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 pending: true
             });
             savePendingMessages(pendingMessages);
-            showToast('Tu mensaje se enviará cuando vuelva la conexión.', 'warning');
+            showToast('Sin conexión. Tu mensaje fue guardado localmente y se enviará automáticamente en cuanto vuelva la red.', 'warning');
             contactForm.reset();
             if (username) {
                 document.getElementById('contactName').value = username;
             }
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 1500);
             return;
         }
 
@@ -140,11 +143,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 created_at: new Date().toISOString()
             });
 
-            showToast('¡Mensaje enviado! Gracias por contactarnos.', 'success');
+            showToast('¡Mensaje enviado con éxito! Redirigiendo al tablero...', 'success');
             contactForm.reset();
             if (username) {
                 document.getElementById('contactName').value = username;
             }
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 1500);
         } catch (error) {
             console.error('Error al enviar mensaje:', error);
             showToast('Error al enviar el mensaje. Intenta de nuevo.', 'error');
