@@ -171,6 +171,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 where('user_id', '==', userId)
             );
 
+            // Mapa para rastrear el estado de respuestas previas
+            // null = primera carga (no notificar), true/false = estado conocido
+            const estadoPrevioRespuestas = new Map();
+            let primeraEscucha = true;
+
             onSnapshot(q, (snapshot) => {
                 const mensajesFirestore = snapshot.docs
                     .map((docSnapshot) => ({ id: docSnapshot.id, ...docSnapshot.data() }))
@@ -186,6 +191,24 @@ document.addEventListener('DOMContentLoaded', () => {
                         const dateB = b.created_at ? new Date(b.created_at).getTime() : 0;
                         return dateB - dateA;
                     });
+
+                // Detectar respuestas nuevas (solo después de la primera carga)
+                if (!primeraEscucha) {
+                    mensajesFirestore.forEach(msg => {
+                        const teniaRespuesta = estadoPrevioRespuestas.get(msg.id);
+                        const tieneRespuesta = !!msg.reply;
+                        // Si antes NO tenía respuesta y ahora SÍ → notificar
+                        if (teniaRespuesta === false && tieneRespuesta) {
+                            showToast('✉️ ¡Tu consulta fue respondida! Revisá la respuesta del administrador más abajo.', 'reply');
+                        }
+                    });
+                }
+
+                // Actualizar el mapa de estado previo
+                mensajesFirestore.forEach(msg => {
+                    estadoPrevioRespuestas.set(msg.id, !!msg.reply);
+                });
+                primeraEscucha = false;
 
                 if (mensajes.length === 0) {
                     consultasContainer.style.display = 'none';
@@ -210,7 +233,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const statusBadge = data.pending
                         ? '<span class="badge bg-warning-subtle text-warning border border-warning-subtle">En espera</span>'
                         : data.reply
-                            ? '<span class="badge bg-success-subtle text-success border border-success-subtle">Respondido</span>'
+                            ? '<span class="badge bg-success-subtle text-success border border-success-subtle">✔ Respondido</span>'
                             : '<span class="badge bg-secondary-subtle text-secondary">Pendiente</span>';
 
                     let replyHtml = '';
@@ -219,7 +242,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         replyHtml = `
                             <div class="consulta-reply-box">
                                 <div class="consulta-reply-header">
-                                    <span>Respuesta del Admin</span>
+                                    <span><i class="bi bi-reply-fill me-1"></i>Respuesta del Admin</span>
                                     <span>${replyDate}</span>
                                 </div>
                                 <div class="consulta-reply-body">${escapeHTML(data.reply)}</div>
@@ -255,17 +278,21 @@ function showToast(message, type = 'success') {
     const colors = {
         success: { bg: '#22c55e', icon: '✅' },
         error:   { bg: '#ef4444', icon: '❌' },
-        warning: { bg: '#f59e0b', icon: '⚠️' }
+        warning: { bg: '#f59e0b', icon: '⚠️' },
+        reply:   { bg: 'linear-gradient(135deg, #3b82f6, #6366f1)', icon: '💬' }
     };
     const c = colors[type] || colors.success;
 
     box.style.background = c.bg;
-    box.innerHTML = `<span style="font-size:1.5rem;">${c.icon}</span><span>${message}</span>`;
+    // Para el tipo 'reply', mostramos el mensaje tal cual (ya tiene el emoji incluido)
+    const iconHtml = type === 'reply' ? '' : `<span style="font-size:1.5rem;">${c.icon}</span>`;
+    box.innerHTML = `${iconHtml}<span>${message}</span>`;
     container.style.display = 'flex';
 
+    const duration = type === 'reply' ? 5000 : 3000;
     setTimeout(() => {
         container.style.display = 'none';
-    }, 3000);
+    }, duration);
 }
 
 function escapeHTML(str) {

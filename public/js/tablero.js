@@ -141,6 +141,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Escuchar cantidad de mensajes en tiempo real para el Badge de notificaciones
         escucharCantidadMensajes();
+    } else if (userId) {
+        // Para usuarios normales: escuchar si tienen respuestas nuevas a sus consultas
+        escucharRespuestasUsuario();
     }
 
     // 3. Vinculación de Botones
@@ -442,6 +445,87 @@ function escucharCantidadMensajes() {
         });
     }, (error) => {
         console.warn('Error obteniendo cantidad de mensajes:', error);
+    });
+}
+
+// Escucha en tiempo real de respuestas para usuarios normales
+// Muestra un badge verde en el botón Contacto cuando hay respuestas no leídas
+function escucharRespuestasUsuario() {
+    const STORAGE_KEY = `seenReplies_${userId}`;
+
+    function getSeenReplies() {
+        try { return new Set(JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]')); }
+        catch { return new Set(); }
+    }
+
+    function setSeenReplies(set) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify([...set]));
+    }
+
+    function updateReplyBadge(count) {
+        const badges = [
+            document.getElementById('replyBadge'),
+            document.getElementById('replyBadgeMobile')
+        ];
+        badges.forEach(b => {
+            if (b) b.style.display = count > 0 ? 'inline-flex' : 'none';
+        });
+    }
+
+    const q = query(collection(db, 'messages'), where('user_id', '==', userId));
+    let primeraEscucha = true;
+
+    onSnapshot(q, (snapshot) => {
+        const seenReplies = getSeenReplies();
+        let nuevasRespuestas = 0;
+        let hayRespuestaRecien = false;
+
+        snapshot.docs.forEach(docSnap => {
+            const data = docSnap.data();
+            if (data.reply) {
+                // Clave única por mensaje+respuesta (usando replied_at para detectar ediciones)
+                const replyKey = `${docSnap.id}_${data.replied_at || 'replied'}`;
+                if (!seenReplies.has(replyKey)) {
+                    nuevasRespuestas++;
+                    if (!primeraEscucha) hayRespuestaRecien = true;
+                }
+            }
+        });
+
+        // Mostrar toast solo si es una notificación nueva (no al cargar la página)
+        if (hayRespuestaRecien) {
+            showToast('💬 ¡Tu consulta fue respondida! Revisá la sección de Contacto.', 'special');
+        }
+
+        updateReplyBadge(nuevasRespuestas);
+        primeraEscucha = false;
+    }, (error) => {
+        console.warn('Error escuchando respuestas del usuario:', error);
+    });
+
+    // Al hacer clic en el boton de Contacto, marcar todas como vistas
+    const contactLinks = [
+        document.getElementById('navContacto'),
+        document.getElementById('navContactoMobile')
+    ];
+    contactLinks.forEach(link => {
+        if (link) {
+            link.addEventListener('click', () => {
+                // Marcar todas las respuestas actuales como vistas antes de navegar
+                const q2 = query(collection(db, 'messages'), where('user_id', '==', userId));
+                getDocs(q2).then(snap => {
+                    const seenReplies = getSeenReplies();
+                    snap.docs.forEach(d => {
+                        const data = d.data();
+                        if (data.reply) {
+                            seenReplies.add(`${d.id}_${data.replied_at || 'replied'}`);
+                        }
+                    });
+                    setSeenReplies(seenReplies);
+                    updateReplyBadge(0);
+                }).catch(() => {});
+            });
+        }
     });
 }
 

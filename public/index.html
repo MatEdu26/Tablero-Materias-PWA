@@ -28,7 +28,9 @@
             <button id="navUsuarios" class="nav-btn nav-btn-primary" style="display: none;" onclick="openUsersModal()"><i class="bi bi-people"></i>Usuarios</button>
             <button id="btnNuevaMateria" class="nav-btn nav-btn-primary" style="display: none;" onclick="openAddMateriaModal()"><i class="bi bi-plus-lg"></i>Nueva Materia</button>
             <button id="loadPlanBtn" class="nav-btn nav-btn-primary"><i class="bi bi-journal-plus"></i>Cargar Plan</button>
-            <a href="contacto.html" class="nav-btn nav-btn-primary" title="Contacto"><i class="bi bi-envelope"></i>Contacto</a>
+            <a id="navContacto" href="contacto.html" class="nav-btn nav-btn-primary" title="Contacto" style="position: relative;"><i class="bi bi-envelope"></i>Contacto
+                <span id="replyBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success" style="display: none; font-size: 0.65rem;">!</span>
+            </a>
             <span id="userGreeting" class="text-white-50 ms-2" style="font-size: 0.85rem;"></span>
             <button id="logoutBtn" class="nav-btn nav-btn-primary" title="Cerrar Sesión"><i class="bi bi-box-arrow-right"></i>Cerrar Sesión</button>
         </div>
@@ -137,9 +139,10 @@
             <i class="bi bi-plus-circle-fill"></i>
             <span>Cargar Plan</span>
         </button>
-        <a href="contacto.html" class="mobile-nav-item">
+        <a id="navContactoMobile" href="contacto.html" class="mobile-nav-item" style="position: relative;">
             <i class="bi bi-envelope"></i>
             <span>Contacto</span>
+            <span id="replyBadgeMobile" class="position-absolute top-0 start-50 translate-middle badge rounded-pill bg-success" style="display: none; font-size: 0.6rem; transform: translate(15px, 0px);">!</span>
         </a>
         <button class="mobile-nav-item" onclick="document.getElementById('logoutBtn').click()">
             <i class="bi bi-box-arrow-right"></i>
