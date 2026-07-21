@@ -8,17 +8,18 @@ Un organizador de materias en formato Kanban diseñado para estudiantes de la Un
 
 *   **Tablero Kanban Interactivo**: Arrastra y suelta (*Drag & Drop*) materias académicas entre columnas para organizar tus cursadas en tiempo real.
 *   **Barra de Progreso Dinámica**: Visualización en tiempo real de cantidad de materias aprobadas, porcentaje del plan completado y promedio académico general.
+*   **Planes de Estudio por Carrera**: Carga dinámica de planes de estudio para distintas carreras (Lic. en Informática, Tec. en Desarrollo Web, Tec. en Redes).
 *   **PWA Instalable**: Soporte para instalación como aplicación nativa en celulares (Android, iOS) y computadoras de escritorio (PC/Mac).
 *   **Soporte Offline**: Service Worker con estrategia de almacenamiento en caché para cargar la aplicación y ver datos previamente sincronizados incluso sin conexión a internet.
 *   **Autenticación Segura**: Sistema de inicio de sesión y registro de usuarios nuevos con control de accesos de Firebase Auth.
-*   **Roles de Usuario**:
-    *   **Usuario Estudiante**: Acceso a su propio tablero Kanban para personalizar materias.
-    *   **Administrador**: Panel especial para gestionar usuarios registrados y leer la bandeja de mensajes/sugerencias enviadas.
+*   **Roles de Usuario (RBAC)**:
+    *   **Usuario Estudiante**: Acceso a su propio tablero Kanban para personalizar sus materias y plan de estudios.
+    *   **Administrador**: Permisos exclusivos para **agregar, modificar y eliminar materias y carreras globales**, gestionar usuarios registrados (cambiar roles o eliminar cuentas) y responder la bandeja de mensajes/sugerencias enviadas por los alumnos.
 *   **Bandeja de Contacto**: Formulario de consultas y sugerencias integrado directamente con la base de datos Firestore.
 
 ---
 
-## � Funcionalidades disponibles sin conexión
+## 📶 Funcionalidades Disponibles Sin Conexión
 
 La aplicación está preparada para ofrecer una experiencia útil incluso cuando no hay internet:
 
@@ -28,7 +29,9 @@ La aplicación está preparada para ofrecer una experiencia útil incluso cuando
 - Acceso a la interfaz principal y a la información ya cargada en el dispositivo mientras no haya red.
 - Persistencia local de la sesión y de los datos del usuario para que la app siga siendo usable en dispositivos móviles y escritorio.
 
-## �🛠️ Tecnologías y Herramientas Utilizadas
+---
+
+## 🛠️ Tecnologías y Herramientas Utilizadas
 
 ### Frontend & Diseño
 *   **HTML5 Semántico**: Estructura de maquetación limpia y accesible.
