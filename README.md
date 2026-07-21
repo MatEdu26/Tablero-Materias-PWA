@@ -83,15 +83,4 @@ La aplicación está preparada para ofrecer una experiencia útil incluso cuando
 
 ---
 
-## ⚙️ Requisitos para Desarrollo Local
 
-1. Tener instalado [Node.js](https://nodejs.org/).
-2. Instalar las herramientas de Firebase de manera global (opcional para desplegar):
-   ```bash
-   npm install -g firebase-tools
-   ```
-3. Iniciar un servidor local (por ejemplo, Live Server en VS Code o usando Python):
-   ```bash
-   python -m http.server 8000
-   ```
-4. Abrir `http://localhost:8000/public/login.html` en tu navegador.
